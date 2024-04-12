@@ -1,0 +1,88 @@
+// datasource db defines the database connection settings.
+// It is configured for PostgreSQL and uses an environment variable for the connection URL.
+// The 'extensions' feature enables the use of PostgreSQL-specific data types.
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+}
+
+// generator db configures Prisma Client settings.
+// It is set up to use Prisma Client Python with asyncio interface and specific features.
+generator db {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+  previewFeatures      = ["postgresqlExtensions"]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  role         Role     @default(USER)
+
+  ComicViews   ComicView[]
+  Explanations Explanation[]
+  Preferences  Preferences?
+  Subscription Subscription[]
+}
+
+model Comic {
+  id        String   @id @default(uuid())
+  title     String
+  imageUrl  String
+  number    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Views        ComicView[]
+  Explanations Explanation[]
+}
+
+model Explanation {
+  id          String   @id @default(uuid())
+  text        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  comicId     String
+  generatedBy String
+
+  Comic Comic @relation(fields: [comicId], references: [id])
+  User  User  @relation(fields: [generatedBy], references: [id])
+}
+
+model Subscription {
+  id         String   @id @default(uuid())
+  userId     String
+  validUntil DateTime
+  createdAt  DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+}
+
+model Preferences {
+  id       String @id @default(uuid())
+  language String
+  userId   String @unique
+
+  User User @relation(fields: [userId], references: [id])
+}
+
+model ComicView {
+  id       String   @id @default(uuid())
+  comicId  String
+  userId   String
+  viewDate DateTime @default(now())
+
+  Comic Comic @relation(fields: [comicId], references: [id])
+  User  User  @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  USER
+  SUBSCRIBER
+  ADMIN
+}
+

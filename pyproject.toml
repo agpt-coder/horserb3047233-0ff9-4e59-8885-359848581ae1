@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "horser"
+version = "0.1.0"
+description = "Based on the details provided in our conversation and the research conducted, the final product is a web application designed to fetch and display a random xkcd comic every time it is called. The application utilizes GPT-4-vision to provide detailed explanations of the comics, which often delve into complex or scientific principles that are represented in a humorous and accessible manner. Specifically, the application is built with the following technology stack:"
+authors = ["AutoGPT <info@agpt.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+fastapi = "^0.75.0"
+httpx = "*"
+prisma = "*"
+pydantic = "*"
+uvicorn = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
